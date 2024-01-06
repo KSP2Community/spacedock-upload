@@ -37,6 +37,9 @@ inputs:
     description: "The spacedock website being uploaded to (defaults to spacedock.info, can be alpha.spacedock.info, or beta.spacedock.info"
     required: false
     default: "spacedock.info"
+branding:
+  icon: 'upload'
+  color: 'blue'
 runs:
   using: "composite"
   steps:
