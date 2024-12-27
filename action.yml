@@ -48,7 +48,9 @@ runs:
       shell: bash
     - name: Log in to spacedock
       run: |
-        login_response=$(curl -F username=${{ inputs.username }} -F password=${{ inputs.password }} -c ./cookies "https://${{ inputs.spacedock_website }}/api/login")
+        encoded_password=$(printf '%s' "${{ inputs.password }}" | jq -sRr @uri)
+        echo "::add-mask::$encoded_password"
+        login_response=$(curl -F "username=${{ inputs.username }}" -F "password=$encoded_password" -c ./cookies "https://${{ inputs.spacedock_website }}/api/login")
         login_errored=$(echo $login_response | jq .error)
         if [ "$login_errored" == "true" ]; then
           echo "Login to space dock errored: $(echo $login_response | jq .reason)"
@@ -57,6 +59,7 @@ runs:
           echo "Login to space dock successful"
         fi
       shell: bash
+
     - name: Query latest game version
       run: |
         echo "LATEST_GAME_VERSION=$(curl 'https://${{ inputs.spacedock_website }}/api/${{ inputs.game_id }}/versions' | jq '.[0].friendly_version' | tr -d \")" >> $GITHUB_ENV
